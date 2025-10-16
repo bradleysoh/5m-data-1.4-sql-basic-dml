@@ -42,30 +42,39 @@ The description for each column (a.k.a data dictionary) is as follows:
 Select a column from a table:
 
 ```sql
-SELECT <column_name> FROM <table_name>;
+SELECT <column_name>
+FROM <table_name>;
 ```
 
 Select multiple columns from a table:
 
 ```sql
-SELECT <column_name_1>, <column_name_2> FROM <table_name>;
+SELECT <column_name_1>, <column_name_2>
+FROM <table_name>;
 ```
 
 Example:
 
 ```sql
-SELECT street_name FROM resale_flat_prices_2017;
+SELECT street_name
+FROM resale_flat_prices_2017;
 ```
 
-_No need to specify the schema `main` as it is the default schema_.
+_No need to specify the schema `main` as it is the default schema. But good to specify nonetheless as a good practice_.
 
 Replace `<column_name>` with `*` to select all columns from a table:
 
 ```sql
-SELECT * FROM resale_flat_prices_2017;
+SELECT *
+FROM resale_flat_prices_2017;
 ```
 
 > Select any 3 columns from the table.
+
+```sql
+SELECT month, flat_type, block
+FROM main.resale_flat_prices_2017;
+```
 
 ### Operators and functions
 
@@ -86,13 +95,16 @@ Operators are used to perform mathematical operations on data. The following are
 If we want to get the resale price in thousands, we can use the `/` operator to divide the resale price by 1000:
 
 ```sql
-SELECT resale_price / 1000 FROM resale_flat_prices_2017;
+SELECT resale_price / 1000
+FROM resale_flat_prices_2017;
 ```
 
-Use the `AS` keyword to rename the column:
+Use the `AS` keyword to rename the column for the duration of the query:
 
 ```sql
-SELECT resale_price / 1000 AS resale_price_thousands FROM resale_flat_prices_2017;
+SELECT resale_price / 1000
+AS resale_price_thousands
+FROM resale_flat_prices_2017;
 ```
 
 There are also non-mathematical operators which we will explore later.
@@ -105,7 +117,7 @@ Functions are used to perform operations on data. The following are some example
 | ---------- | ------------------------------------------------------------------------ |
 | `ABS()`    | Returns the absolute value of a number.                                  |
 | `ROUND()`  | Returns a numeric value rounded to a specified number of decimal places. |
-| `LOWER()`  | Returns a string in lowercase.                                           |
+| `LOWER()`  | Returns a string in lowercase. Useful if one is unsure about the capitalisation of certain columns          |
 | `UPPER()`  | Returns a string in uppercase.                                           |
 | `LENGTH()` | Returns the length (number of characters) of a string.                   |
 | `TRIM()`   | Removes leading and trailing spaces from a string.                       |
@@ -114,12 +126,25 @@ Functions are used to perform operations on data. The following are some example
 Example:
 
 ```sql
-SELECT ABS(resale_price) FROM resale_flat_prices_2017;
+SELECT ABS(rpf.resale_price)
+FROM resale_flat_prices_2017 rpf;
 ```
 
 > Select column town as lowercase
->
+
+```sql
+SELECT LOWER(rpf.town)
+FROM main.resale_flat_prices_2017 rpf
+```
+
 > Concatenate block and street_name and return as a new column named address
+
+```sql
+SELECT CONCAT(rpf.block, ' ', rpf.street_name)
+AS Address
+FROM main.resale_flat_prices_2017 rpf
+
+```
 
 ### Filters
 
@@ -154,7 +179,13 @@ WHERE town = 'BUKIT MERAH';
 ```
 
 > Select flats with floor area greater than 100 sqm
->
+
+```sql
+SELECT *
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.floor_area_sqm > '100';
+```
+
 > Select flats with resale price between 400,000 and 500,000
 >
 > Select flats with lease commence date later than year 2000 and floor area greater than 100 sqm
