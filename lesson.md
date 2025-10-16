@@ -178,17 +178,31 @@ FROM resale_flat_prices_2017
 WHERE town = 'BUKIT MERAH';
 ```
 
-> Select flats with floor area greater than 100 sqm
+> Count the number of flats with floor area greater than 100 sqm
 
 ```sql
-SELECT *
+SELECT count(*)
 FROM resale_flat_prices_2017 rpf
 WHERE rpf.floor_area_sqm > '100';
 ```
 
 > Select flats with resale price between 400,000 and 500,000
->
+
+```sql
+SELECT *
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.resale_price >= '400000'
+AND rpf.resale_price <= '500000';
+```
+
 > Select flats with lease commence date later than year 2000 and floor area greater than 100 sqm
+
+```sql
+SELECT *
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.lease_commence_date > '2000'
+AND rpf.floor_area_sqm > '100';
+```
 
 ### Sorting
 
