@@ -211,22 +211,33 @@ The `ORDER BY` clause is used to sort data by a column in a `SELECT` statement. 
 Example:
 
 ```sql
-SELECT * FROM resale_flat_prices_2017 ORDER BY lease_commence_date;
+SELECT *
+FROM resale_flat_prices_2017
+ORDER BY lease_commence_date;
 ```
 
 ```sql
-SELECT * FROM resale_flat_prices_2017 ORDER BY resale_price DESC;
+SELECT *
+FROM resale_flat_prices_2017
+ORDER BY resale_price DESC;
 ```
 
 Return flats with the most recent lease commence date and highest to lowest resale price:
 
 ```sql
 SELECT *
-FROM resale_flat_prices_2017
-ORDER BY lease_commence_date DESC, resale_price DESC;
+FROM resale_flat_prices_2017 rpf
+ORDER BY rpf.lease_commence_date DESC, rpf.resale_price DESC;
 ```
 
 > Select flats from highest to lowest resale price in Punggol
+
+```sql
+SELECT *
+FROM resale_flat_prices_2017 rpf
+WHERE lower(rpf.town) = 'punggol'
+ORDER BY rpf.resale_price DESC;
+```
 
 ### Aggregate functions
 
