@@ -256,20 +256,35 @@ Aggregate functions are used to perform calculations on a set of values and retu
 Example:
 
 ```sql
-SELECT COUNT(*) FROM resale_flat_prices_2017;
+SELECT COUNT(*)
+FROM resale_flat_prices_2017;
 ```
 
 ```sql
-SELECT AVG(resale_price) FROM resale_flat_prices_2017;
+SELECT AVG(resale_price)
+FROM resale_flat_prices_2017;
 ```
 
 ```sql
-SELECT MAX(resale_price) FROM resale_flat_prices_2017;
+SELECT MAX(resale_price)
+FROM resale_flat_prices_2017;
 ```
 
 > Select the average resale price of flats in Bishan
->
+
+```sql
+SELECT round(AVG(rpf.resale_price),2)
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.town = 'BISHAN';
+```
+
 > Select the total resale value (price) of flats in Tampines
+
+```sql
+SELECT SUM(rpf.resale_price)
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.town = 'TAMPINES';
+```
 
 ### Group by
 
@@ -278,7 +293,7 @@ The `GROUP BY` clause is used to group rows that have the same values into summa
 Average resale price of flats in each town:
 
 ```sql
-SELECT town, AVG(resale_price)
+SELECT town, round(AVG(resale_price),2)
 FROM resale_flat_prices_2017
 GROUP BY town;
 ```
@@ -286,12 +301,12 @@ GROUP BY town;
 You can also group by multiple columns:
 
 ```sql
-SELECT town, lease_commence_date, AVG(resale_price)
+SELECT town, lease_commence_date, round(AVG(resale_price),2)
 FROM resale_flat_prices_2017
 GROUP BY town, lease_commence_date;
 ```
 
-You can replace the `town, lease_commence_date` after the `GROUP BY` with `1, 2` to group by the first and second columns:
+You can replace the `town, lease_commence_date` after the `GROUP BY` with `1, 2` to group by the first and second columns, but this is not recommended:
 
 ```sql
 SELECT town, lease_commence_date, AVG(resale_price)
@@ -302,17 +317,37 @@ GROUP BY 1, 2;
 Combined with sorting:
 
 ```sql
-SELECT town, lease_commence_date, AVG(resale_price)
+SELECT town, lease_commence_date, round(AVG(resale_price),2)
 FROM resale_flat_prices_2017
 GROUP BY town, lease_commence_date
 ORDER BY town, lease_commence_date DESC;
 ```
 
 > Select the average resale price by flat type
->
+
+```sql
+SELECT rpf.flat_type, round(AVG(rpf.resale_price), 2)
+FROM main.resale_flat_prices_2017 rpf
+GROUP BY rpf.flat_type;
+```
+
 > Select the average resale price by flat type and flat model
->
+
+```sql
+SELECT rpf.flat_type, rpf.flat_model, round(AVG(rpf.resale_price), 2)
+FROM main.resale_flat_prices_2017 rpf
+GROUP BY rpf.flat_type, rpf.flat_model
+ORDER BY flat_type;
+```
+
 > Select the average resale price by town and lease commence date only for lease commence dates after year 2010 and sort by town (descending) and lease commence date (descending)
+
+```sql
+SELECT rpf.flat_type, rpf.flat_model, round(AVG(rpf.resale_price), 2)
+FROM main.resale_flat_prices_2017 rpf
+GROUP BY rpf.flat_type, rpf.flat_model
+ORDER BY flat_type;
+```
 
 ### Having
 
