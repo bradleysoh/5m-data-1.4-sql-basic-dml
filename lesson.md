@@ -42,30 +42,39 @@ The description for each column (a.k.a data dictionary) is as follows:
 Select a column from a table:
 
 ```sql
-SELECT <column_name> FROM <table_name>;
+SELECT <column_name>
+FROM <table_name>;
 ```
 
 Select multiple columns from a table:
 
 ```sql
-SELECT <column_name_1>, <column_name_2> FROM <table_name>;
+SELECT <column_name_1>, <column_name_2>
+FROM <table_name>;
 ```
 
 Example:
 
 ```sql
-SELECT street_name FROM resale_flat_prices_2017;
+SELECT street_name
+FROM resale_flat_prices_2017;
 ```
 
-_No need to specify the schema `main` as it is the default schema_.
+_No need to specify the schema `main` as it is the default schema. But good to specify nonetheless as a good practice_.
 
 Replace `<column_name>` with `*` to select all columns from a table:
 
 ```sql
-SELECT * FROM resale_flat_prices_2017;
+SELECT *
+FROM resale_flat_prices_2017;
 ```
 
 > Select any 3 columns from the table.
+
+```sql
+SELECT month, flat_type, block
+FROM main.resale_flat_prices_2017;
+```
 
 ### Operators and functions
 
@@ -86,13 +95,16 @@ Operators are used to perform mathematical operations on data. The following are
 If we want to get the resale price in thousands, we can use the `/` operator to divide the resale price by 1000:
 
 ```sql
-SELECT resale_price / 1000 FROM resale_flat_prices_2017;
+SELECT resale_price / 1000
+FROM resale_flat_prices_2017;
 ```
 
-Use the `AS` keyword to rename the column:
+Use the `AS` keyword to rename the column for the duration of the query:
 
 ```sql
-SELECT resale_price / 1000 AS resale_price_thousands FROM resale_flat_prices_2017;
+SELECT resale_price / 1000
+AS resale_price_thousands
+FROM resale_flat_prices_2017;
 ```
 
 There are also non-mathematical operators which we will explore later.
@@ -105,7 +117,7 @@ Functions are used to perform operations on data. The following are some example
 | ---------- | ------------------------------------------------------------------------ |
 | `ABS()`    | Returns the absolute value of a number.                                  |
 | `ROUND()`  | Returns a numeric value rounded to a specified number of decimal places. |
-| `LOWER()`  | Returns a string in lowercase.                                           |
+| `LOWER()`  | Returns a string in lowercase. Useful if one is unsure about the capitalisation of certain columns          |
 | `UPPER()`  | Returns a string in uppercase.                                           |
 | `LENGTH()` | Returns the length (number of characters) of a string.                   |
 | `TRIM()`   | Removes leading and trailing spaces from a string.                       |
@@ -114,12 +126,25 @@ Functions are used to perform operations on data. The following are some example
 Example:
 
 ```sql
-SELECT ABS(resale_price) FROM resale_flat_prices_2017;
+SELECT ABS(rpf.resale_price)
+FROM resale_flat_prices_2017 rpf;
 ```
 
 > Select column town as lowercase
->
+
+```sql
+SELECT LOWER(rpf.town)
+FROM main.resale_flat_prices_2017 rpf
+```
+
 > Concatenate block and street_name and return as a new column named address
+
+```sql
+SELECT CONCAT(rpf.block, ' ', rpf.street_name)
+AS Address
+FROM main.resale_flat_prices_2017 rpf
+
+```
 
 ### Filters
 
@@ -153,11 +178,31 @@ FROM resale_flat_prices_2017
 WHERE town = 'BUKIT MERAH';
 ```
 
-> Select flats with floor area greater than 100 sqm
->
+> Count the number of flats with floor area greater than 100 sqm
+
+```sql
+SELECT count(*)
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.floor_area_sqm > '100';
+```
+
 > Select flats with resale price between 400,000 and 500,000
->
+
+```sql
+SELECT *
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.resale_price >= '400000'
+AND rpf.resale_price <= '500000';
+```
+
 > Select flats with lease commence date later than year 2000 and floor area greater than 100 sqm
+
+```sql
+SELECT *
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.lease_commence_date > '2000'
+AND rpf.floor_area_sqm > '100';
+```
 
 ### Sorting
 
@@ -166,22 +211,33 @@ The `ORDER BY` clause is used to sort data by a column in a `SELECT` statement. 
 Example:
 
 ```sql
-SELECT * FROM resale_flat_prices_2017 ORDER BY lease_commence_date;
+SELECT *
+FROM resale_flat_prices_2017
+ORDER BY lease_commence_date;
 ```
 
 ```sql
-SELECT * FROM resale_flat_prices_2017 ORDER BY resale_price DESC;
+SELECT *
+FROM resale_flat_prices_2017
+ORDER BY resale_price DESC;
 ```
 
 Return flats with the most recent lease commence date and highest to lowest resale price:
 
 ```sql
 SELECT *
-FROM resale_flat_prices_2017
-ORDER BY lease_commence_date DESC, resale_price DESC;
+FROM resale_flat_prices_2017 rpf
+ORDER BY rpf.lease_commence_date DESC, rpf.resale_price DESC;
 ```
 
 > Select flats from highest to lowest resale price in Punggol
+
+```sql
+SELECT *
+FROM resale_flat_prices_2017 rpf
+WHERE lower(rpf.town) = 'punggol'
+ORDER BY rpf.resale_price DESC;
+```
 
 ### Aggregate functions
 
@@ -200,20 +256,35 @@ Aggregate functions are used to perform calculations on a set of values and retu
 Example:
 
 ```sql
-SELECT COUNT(*) FROM resale_flat_prices_2017;
+SELECT COUNT(*)
+FROM resale_flat_prices_2017;
 ```
 
 ```sql
-SELECT AVG(resale_price) FROM resale_flat_prices_2017;
+SELECT AVG(resale_price)
+FROM resale_flat_prices_2017;
 ```
 
 ```sql
-SELECT MAX(resale_price) FROM resale_flat_prices_2017;
+SELECT MAX(resale_price)
+FROM resale_flat_prices_2017;
 ```
 
 > Select the average resale price of flats in Bishan
->
+
+```sql
+SELECT round(AVG(rpf.resale_price),2)
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.town = 'BISHAN';
+```
+
 > Select the total resale value (price) of flats in Tampines
+
+```sql
+SELECT SUM(rpf.resale_price)
+FROM resale_flat_prices_2017 rpf
+WHERE rpf.town = 'TAMPINES';
+```
 
 ### Group by
 
@@ -222,7 +293,7 @@ The `GROUP BY` clause is used to group rows that have the same values into summa
 Average resale price of flats in each town:
 
 ```sql
-SELECT town, AVG(resale_price)
+SELECT town, round(AVG(resale_price),2)
 FROM resale_flat_prices_2017
 GROUP BY town;
 ```
@@ -230,12 +301,12 @@ GROUP BY town;
 You can also group by multiple columns:
 
 ```sql
-SELECT town, lease_commence_date, AVG(resale_price)
+SELECT town, lease_commence_date, round(AVG(resale_price),2)
 FROM resale_flat_prices_2017
 GROUP BY town, lease_commence_date;
 ```
 
-You can replace the `town, lease_commence_date` after the `GROUP BY` with `1, 2` to group by the first and second columns:
+You can replace the `town, lease_commence_date` after the `GROUP BY` with `1, 2` to group by the first and second columns, but this is not recommended:
 
 ```sql
 SELECT town, lease_commence_date, AVG(resale_price)
@@ -246,17 +317,37 @@ GROUP BY 1, 2;
 Combined with sorting:
 
 ```sql
-SELECT town, lease_commence_date, AVG(resale_price)
+SELECT town, lease_commence_date, round(AVG(resale_price),2)
 FROM resale_flat_prices_2017
 GROUP BY town, lease_commence_date
 ORDER BY town, lease_commence_date DESC;
 ```
 
 > Select the average resale price by flat type
->
+
+```sql
+SELECT rpf.flat_type, round(AVG(rpf.resale_price), 2)
+FROM main.resale_flat_prices_2017 rpf
+GROUP BY rpf.flat_type;
+```
+
 > Select the average resale price by flat type and flat model
->
+
+```sql
+SELECT rpf.flat_type, rpf.flat_model, round(AVG(rpf.resale_price), 2)
+FROM main.resale_flat_prices_2017 rpf
+GROUP BY rpf.flat_type, rpf.flat_model
+ORDER BY flat_type;
+```
+
 > Select the average resale price by town and lease commence date only for lease commence dates after year 2010 and sort by town (descending) and lease commence date (descending)
+
+```sql
+SELECT rpf.flat_type, rpf.flat_model, round(AVG(rpf.resale_price), 2)
+FROM main.resale_flat_prices_2017 rpf
+GROUP BY rpf.flat_type, rpf.flat_model
+ORDER BY flat_type;
+```
 
 ### Having
 
@@ -290,6 +381,13 @@ HAVING AVG(resale_price) > 500000;
 `HAVING` can only be used on columns that appear in the `SELECT` clause or columns that are used in aggregate functions.
 
 > Select the maximum resale price by town only for town with maximum resale price greater than 1,000,000
+
+```sql
+SELECT town, MAX(resale_price)
+FROM resale_flat_prices_2017
+GROUP BY town
+HAVING MAX(resale_price) > 1000000;
+```
 
 ### Advanced operators and functions
 
@@ -327,6 +425,10 @@ SELECT DISTINCT town FROM resale_flat_prices_2017;
 
 > Return the unique flat types and flat models
 
+```sql
+SELECT DISTINCT flat_type FROM resale_flat_prices_2017
+```
+
 #### `CASE`
 
 The `CASE` expression is used to evaluate a list of conditions and return a value. It is similar to the `IF` statement in programming languages. It starts with the `CASE` keyword followed by the `WHEN` keyword and ends with the `END` keyword.
@@ -347,6 +449,19 @@ FROM resale_flat_prices_2017;
 
 > Return the records with a new column `flat_size` with values `Small` if flat type is `1-3 ROOM`, `Medium` if flat type is `4 ROOM` and `Large` if flat type is `5 ROOM`, `EXECUTIVE` or `MULTI-GENERATION`
 
+```sql
+SELECT 
+	*,
+	CASE 
+		WHEN flat_type IN ('1 ROOM', '2 ROOM', '3 ROOM') THEN 'Small'
+		WHEN flat_type = '4 ROOM' THEN 'Medium'
+		WHEN flat_type IN ('5 ROOM', 'EXECUTIVE', 'MULTI-GENERATION') THEN 'Large'
+		ELSE 'Unknown'
+	END AS flat_size
+FROM 
+	resale_flat_prices_2017;
+```
+
 #### `CAST`
 
 The `CAST` function is used to convert a value from one data type to another data type.
@@ -355,7 +470,7 @@ The `CAST` function is used to convert a value from one data type to another dat
 SELECT town, resale_price, CAST(resale_price AS INTEGER) FROM resale_flat_prices_2017;
 ```
 
-or `::` can be used instead of `CAST`:
+or `::` can be used instead of `CAST` (not recommended):
 
 ```sql
 SELECT town, resale_price, resale_price::INTEGER FROM resale_flat_prices_2017;
@@ -366,7 +481,9 @@ SELECT town, resale_price, resale_price::INTEGER FROM resale_flat_prices_2017;
 We can convert the `month` column from varchar to `date` using `CAST`. We can concatenate the day of the month to the month.
 
 ```sql
-SELECT *, CONCAT(month, '-01')::date AS transaction_date FROM resale_flat_prices_2017;
+SELECT *,
+CONCAT(month, '-01')::date AS transaction_date
+FROM resale_flat_prices_2017;
 ```
 
 We can use our knowledge of DDL to add that as a new column to the table:
