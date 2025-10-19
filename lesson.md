@@ -382,6 +382,13 @@ HAVING AVG(resale_price) > 500000;
 
 > Select the maximum resale price by town only for town with maximum resale price greater than 1,000,000
 
+```sql
+SELECT town, MAX(resale_price)
+FROM resale_flat_prices_2017
+GROUP BY town
+HAVING MAX(resale_price) > 1000000;
+```
+
 ### Advanced operators and functions
 
 #### `IN`
@@ -418,6 +425,10 @@ SELECT DISTINCT town FROM resale_flat_prices_2017;
 
 > Return the unique flat types and flat models
 
+```sql
+SELECT DISTINCT flat_type FROM resale_flat_prices_2017
+```
+
 #### `CASE`
 
 The `CASE` expression is used to evaluate a list of conditions and return a value. It is similar to the `IF` statement in programming languages. It starts with the `CASE` keyword followed by the `WHEN` keyword and ends with the `END` keyword.
@@ -438,6 +449,19 @@ FROM resale_flat_prices_2017;
 
 > Return the records with a new column `flat_size` with values `Small` if flat type is `1-3 ROOM`, `Medium` if flat type is `4 ROOM` and `Large` if flat type is `5 ROOM`, `EXECUTIVE` or `MULTI-GENERATION`
 
+```sql
+SELECT 
+	*,
+	CASE 
+		WHEN flat_type IN ('1 ROOM', '2 ROOM', '3 ROOM') THEN 'Small'
+		WHEN flat_type = '4 ROOM' THEN 'Medium'
+		WHEN flat_type IN ('5 ROOM', 'EXECUTIVE', 'MULTI-GENERATION') THEN 'Large'
+		ELSE 'Unknown'
+	END AS flat_size
+FROM 
+	resale_flat_prices_2017;
+```
+
 #### `CAST`
 
 The `CAST` function is used to convert a value from one data type to another data type.
@@ -446,7 +470,7 @@ The `CAST` function is used to convert a value from one data type to another dat
 SELECT town, resale_price, CAST(resale_price AS INTEGER) FROM resale_flat_prices_2017;
 ```
 
-or `::` can be used instead of `CAST`:
+or `::` can be used instead of `CAST` (not recommended):
 
 ```sql
 SELECT town, resale_price, resale_price::INTEGER FROM resale_flat_prices_2017;
@@ -457,7 +481,9 @@ SELECT town, resale_price, resale_price::INTEGER FROM resale_flat_prices_2017;
 We can convert the `month` column from varchar to `date` using `CAST`. We can concatenate the day of the month to the month.
 
 ```sql
-SELECT *, CONCAT(month, '-01')::date AS transaction_date FROM resale_flat_prices_2017;
+SELECT *,
+CONCAT(month, '-01')::date AS transaction_date
+FROM resale_flat_prices_2017;
 ```
 
 We can use our knowledge of DDL to add that as a new column to the table:
